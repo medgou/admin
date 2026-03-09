@@ -17,10 +17,18 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
 let db;
 try {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    // Fix for Railway/Env variables where \n gets escaped as \\n
+    // Bulletproof Private Key Formatter for Railway Env variables
     if (serviceAccount.private_key) {
-        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+        let pk = serviceAccount.private_key;
+        // Extract the raw base64 part, ignoring broken newlines or spaces
+        const match = pk.match(/-----BEGIN PRIVATE KEY-----([\s\S]+?)-----END PRIVATE KEY-----/);
+        if (match) {
+            const rawKey = match[1].replace(/\s+/g, '').replace(/\\n/g, '');
+            const wrappedKey = rawKey.match(/.{1,64}/g).join('\n');
+            serviceAccount.private_key = `-----BEGIN PRIVATE KEY-----\n${wrappedKey}\n-----END PRIVATE KEY-----\n`;
+        }
     }
+
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });

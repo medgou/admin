@@ -17,6 +17,10 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
 let db;
 try {
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    // Fix for Railway/Env variables where \n gets escaped as \\n
+    if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });

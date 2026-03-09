@@ -16,10 +16,21 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
 // Service account JSON stored as env var FIREBASE_SERVICE_ACCOUNT (JSON string)
 let db;
 try {
-    // 100% BULLETPROOF FIX for Railway ASN.1 errors!
-    // Decode base64 environment variable straight to JSON!
     const keyData = Buffer.from(process.env.FIREBASE_B64 || '', 'base64').toString('utf8');
     const serviceAccount = JSON.parse(keyData);
+
+    if (serviceAccount.private_key) {
+        let pk = serviceAccount.private_key;
+        pk = pk.replace(/-----BEGIN PRIVATE KEY-----/, '').replace(/-----END PRIVATE KEY-----/, '');
+        pk = pk.replace(/\s+/g, '').replace(/\\n/g, ''); // Remove all spaces and escaped newlines
+
+        let formattedKey = '-----BEGIN PRIVATE KEY-----\n';
+        for (let i = 0; i < pk.length; i += 64) {
+            formattedKey += pk.substring(i, i + 64) + '\n';
+        }
+        formattedKey += '-----END PRIVATE KEY-----\n';
+        serviceAccount.private_key = formattedKey;
+    }
 
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)

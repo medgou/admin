@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WHTS Injection - License Server Admin</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #38bdf8;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #94a3b8;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            background: #0f172a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        .status-unused {
+            color: #94a3b8;
+        }
+
+        .status-active {
+            color: #10b981;
+        }
+
+        .status-expired {
+            color: #ef4444;
+        }
+
+        .status-banned {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        #logs {
+            margin-top: 15px;
+            padding: 10px;
+            background: #0f172a;
+            border-left: 4px solid #38bdf8;
+            border-radius: 4px;
+            display: none;
+            word-break: break-all;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔑 License Generator</h1>
+
+        <div class="form-group">
+            <label>Admin Password</label>
+            <input type="password" id="adminPass" placeholder="e.g. admin123" value="admin123">
+        </div>
+
+        <div style="display:flex; gap: 15px;">
+            <div class="form-group" style="flex:1;">
+                <label>Duration (Days)</label>
+                <input type="number" id="duration" value="30" placeholder="e.g. 30">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Number of Keys</label>
+                <input type="number" id="copies" value="1" min="1" max="100">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Bind to Device ID (Optional - For strict HWID Lock before activation)</label>
+            <input type="text" id="bound_hwid" placeholder="Paste Device ID here, or leave empty...">
+        </div>
+
+        <button onclick="generateKeys()">Generate Keys</button>
+
+        <div id="logs"></div>
+
+        <h2 style="margin-top: 40px; border-top: 1px solid #334155; padding-top: 20px;">All Licenses</h2>
+        <button onclick="fetchLicenses()" style="background:#475569;">Refresh List</button>
+
+        <table id="licensesList">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>HWID</th>
+                    <th>Expires</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function api(path, body) {
+            try {
+                const r = await fetch(path, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                return await r.json();
+            } catch (e) {
+                return { error: e.message };
+            }
+        }
+
+        async function generateKeys() {
+            const result = await api('/api/admin/generate', {
+                password: document.getElementById('adminPass').value,
+                duration_days: document.getElementById('duration').value,
+                copies: document.getElementById('copies').value,
+                bound_hwid: document.getElementById('bound_hwid').value
+            });
+
+            const logs = document.getElementById('logs');
+            logs.style.display = 'block';
+
+            if (result.error) {
+                logs.innerHTML = `<span style="color:red">Error: ${result.error}</span>`;
+            } else {
+                let html = '<strong>Generated Keys:</strong><ul>';
+                result.keys.forEach(k => {
+                    html += `<li style="color:#10b981">${k.key} <span style="color:#64748b; font-size: 12px;">(${k.duration_days} days)</span></li>`;
+                });
+                html += '</ul>';
+                logs.innerHTML = html;
+                fetchLicenses();
+            }
+        }
+
+        async function fetchLicenses() {
+            const table = document.querySelector('#licensesList tbody');
+            const result = await api('/api/admin/list', {
+                password: document.getElementById('adminPass').value
+            });
+
+            if (result.error) {
+                table.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">${result.error}</td></tr>`;
+                return;
+            }
+
+            table.innerHTML = '';
+            result.licenses.forEach(l => {
+                const tr = document.createElement('tr');
+                const exp = l.expiry_date ? new Date(l.expiry_date).toISOString().split('T')[0] : 'N/A';
+
+                tr.innerHTML = `
+                    <td style="font-family: monospace;">${l.key}</td>
+                    <td>${l.duration_days}</td>
+                    <td class="status-${l.status}">${l.status.toUpperCase()}</td>
+                    <td style="font-size: 11px; max-width: 150px; overflow:hidden; text-overflow:ellipsis;" title="${l.hwid}">${l.hwid || 'None'}</td>
+                    <td style="font-size: 12px;">${exp}</td>
+                    <td>
+                        <button onclick="banKey('${l.key}')" style="background:#dc2626; padding: 5px 10px; font-size: 12px;" ${l.status === 'banned' ? 'disabled' : ''}>Ban</button>
+                    </td>
+                `;
+                table.appendChild(tr);
+            });
+        }
+
+        async function banKey(key) {
+            if (!confirm('Are you sure you want to completely ban this license key? The user will not be able to use the app immediately.')) return;
+            const res = await api('/api/admin/ban', {
+                password: document.getElementById('adminPass').value,
+                key
+            });
+            if (res.success) {
+                alert('Banned!');
+                fetchLicenses();
+            } else {
+                alert('Error: ' + res.error);
+            }
+        }
+
+        // Auto load
+        fetchLicenses();
+    </script>
+</body>
+
+</html>

@@ -1,50 +1,42 @@
 const express = require('express');
 const cors = require('cors');
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const crypto = require('crypto');
-const admin = require('firebase-admin');
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Admin Password
+// ====== Config ======
 const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
+// Use /data for Railway Volumes if available, otherwise fallback to __dirname
+const DB_DIR = process.env.RAILWAY_ENVIRONMENT ? '/data' : __dirname;
+const dbPath = path.join(DB_DIR, 'licenses.db');
 
-// ===== Firebase Admin Init =====
-// Service account JSON stored as env var FIREBASE_SERVICE_ACCOUNT (JSON string)
-let db;
-try {
-    const keyData = Buffer.from(process.env.FIREBASE_B64 || '', 'base64').toString('utf8');
-    const serviceAccount = JSON.parse(keyData);
+console.log('Using DB Path:', dbPath);
 
-    if (serviceAccount.private_key) {
-        let pk = serviceAccount.private_key;
-        pk = pk.replace(/-----BEGIN PRIVATE KEY-----/, '').replace(/-----END PRIVATE KEY-----/, '');
-        pk = pk.replace(/\s+/g, '').replace(/\\n/g, ''); // Remove all spaces and escaped newlines
+// Init DB
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) console.error('Database opening error: ', err);
+    else console.log('Database connected!');
+});
 
-        let formattedKey = '-----BEGIN PRIVATE KEY-----\n';
-        for (let i = 0; i < pk.length; i += 64) {
-            formattedKey += pk.substring(i, i + 64) + '\n';
-        }
-        formattedKey += '-----END PRIVATE KEY-----\n';
-        serviceAccount.private_key = formattedKey;
-    }
+// Setup Table
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS licenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT UNIQUE NOT NULL,
+        duration_days INTEGER NOT NULL,
+        status TEXT DEFAULT 'unused',  -- unused, active, expired, banned
+        hwid TEXT,                     -- Hardware ID for locking
+        activation_date DATETIME,
+        expiry_date DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+});
 
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
-    db = admin.firestore();
-    console.log('[Firebase] Connected to Firestore ✅');
-} catch (e) {
-    console.error('[Firebase] Failed to init:', e.message);
-    process.exit(1);
-}
-
-const LICENSES_COL = 'licenses';
-
-// ===== HELPERS =====
+// Helpers
 function generateKey() {
     return 'WHTS-' +
         crypto.randomBytes(3).toString('hex').toUpperCase() + '-' +
@@ -52,15 +44,13 @@ function generateKey() {
         crypto.randomBytes(4).toString('hex').toUpperCase();
 }
 
-// Admin Dashboard HTML
+// Serve Admin Dashboard
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// ========== ADMIN API ===========
-
-// Generate Keys
-app.post('/api/admin/generate', async (req, res) => {
+// ========== ADMIN ENDPOINTS ==========
+app.post('/api/admin/generate', (req, res) => {
     const { password, duration_days, copies, bound_hwid } = req.body;
     if (password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -69,106 +59,91 @@ app.post('/api/admin/generate', async (req, res) => {
     if (isNaN(days) || days <= 0) days = 36500;
 
     const hwidToBind = (bound_hwid && bound_hwid.trim() !== '') ? bound_hwid.trim() : null;
-    const keys = [];
-    const batch = db.batch();
+    const generatedKeys = [];
 
-    for (let i = 0; i < num; i++) {
-        const k = generateKey();
-        const docRef = db.collection(LICENSES_COL).doc(k);
-        const licenseData = {
-            key: k,
-            duration_days: days,
-            status: 'unused',
-            hwid: hwidToBind,
-            activation_date: null,
-            expiry_date: null,
-            created_at: new Date().toISOString()
-        };
-        batch.set(docRef, licenseData);
-        keys.push({ key: k, duration_days: days, bound_hwid: hwidToBind });
-    }
+    db.serialize(() => {
+        db.run("BEGIN TRANSACTION");
+        const stmt = db.prepare(`INSERT INTO licenses (key, duration_days, hwid) VALUES (?, ?, ?)`);
 
-    await batch.commit();
-    res.json({ success: true, keys });
+        for (let i = 0; i < num; i++) {
+            const k = generateKey();
+            stmt.run(k, days, hwidToBind);
+            generatedKeys.push({ key: k, duration_days: days, bound_hwid: hwidToBind });
+        }
+
+        stmt.finalize();
+        db.run("COMMIT", (err) => {
+            if (err) return res.status(500).json({ error: 'DB Transaction Failed' });
+            res.json({ success: true, keys: generatedKeys });
+        });
+    });
 });
 
-// List Licenses
-app.post('/api/admin/list', async (req, res) => {
+app.post('/api/admin/list', (req, res) => {
     const { password } = req.body;
     if (password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
 
-    const snap = await db.collection(LICENSES_COL).orderBy('created_at', 'desc').get();
-    const licenses = snap.docs.map(d => d.data());
-    res.json({ success: true, licenses });
+    db.all(`SELECT * FROM licenses ORDER BY created_at DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Database Error' });
+        res.json({ success: true, licenses: rows });
+    });
 });
 
-// Ban Key
-app.post('/api/admin/ban', async (req, res) => {
+app.post('/api/admin/ban', (req, res) => {
     const { password, key } = req.body;
     if (password !== ADMIN_PASS) return res.status(401).json({ error: 'Unauthorized' });
 
-    await db.collection(LICENSES_COL).doc(key).update({ status: 'banned' });
-    res.json({ success: true });
+    db.run(`UPDATE licenses SET status = 'banned' WHERE key = ?`, [key], function (err) {
+        if (err) return res.status(500).json({ error: 'Database Error' });
+        if (this.changes === 0) return res.status(404).json({ error: 'Key not found' });
+        res.json({ success: true });
+    });
 });
 
-// ========== APP API ===========
-// Activate / Validate License
-app.post('/api/app/activate', async (req, res) => {
+// ========== APP EXPORT ENDPOINTS ==========
+app.post('/api/app/activate', (req, res) => {
     const { key, hwid } = req.body;
     if (!key || !hwid) return res.status(400).json({ error: 'Missing Key or HWID' });
 
-    const docRef = db.collection(LICENSES_COL).doc(key);
-    const doc = await docRef.get();
+    db.get(`SELECT * FROM licenses WHERE key = ?`, [key], (err, row) => {
+        if (err) return res.status(500).json({ error: 'Server Error' });
+        if (!row) return res.status(404).json({ error: 'License key not found' });
 
-    if (!doc.exists) return res.status(404).json({ error: 'License key not found' });
+        if (row.status === 'banned') return res.status(403).json({ error: 'This license has been banned.' });
 
-    const license = doc.data();
-    const now = new Date();
+        const now = new Date();
 
-    if (license.status === 'banned') return res.status(403).json({ error: 'This license has been banned.' });
-
-    if (license.status === 'active') {
-        // Check expiry
-        if (license.expiry_date && new Date(license.expiry_date) < now) {
-            await docRef.update({ status: 'expired' });
-            return res.status(403).json({ error: 'License expired.' });
-        }
-        // Check HWID lock
-        if (license.hwid && license.hwid !== hwid) {
-            return res.status(403).json({ error: 'License is already used on another computer.' });
-        }
-        return res.json({ success: true, message: 'License verified', expiry_date: license.expiry_date });
-    }
-
-    if (license.status === 'unused') {
-        // Pre-bound HWID check
-        if (license.hwid && license.hwid !== hwid) {
-            return res.status(403).json({ error: 'This key is bound to a different device.' });
+        if (row.status === 'active') {
+            if (row.expiry_date && new Date(row.expiry_date) < now) {
+                db.run(`UPDATE licenses SET status = 'expired' WHERE key = ?`, [key]);
+                return res.status(403).json({ error: 'License expired.' });
+            }
+            if (row.hwid && row.hwid !== hwid) {
+                return res.status(403).json({ error: 'License is already used on another computer.' });
+            }
+            return res.json({ success: true, message: 'License verified', expiry_date: row.expiry_date });
         }
 
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + license.duration_days);
-        const expiryISO = license.duration_days >= 36000 ? null : expiryDate.toISOString();
+        if (row.status === 'unused') {
+            if (row.hwid && row.hwid !== hwid) {
+                return res.status(403).json({ error: 'This key is bound to a different device.' });
+            }
 
-        await docRef.update({
-            status: 'active',
-            hwid: hwid,
-            activation_date: now.toISOString(),
-            expiry_date: expiryISO
-        });
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + row.duration_days);
+            const expiryStr = row.duration_days >= 36000 ? null : expiryDate.toISOString();
 
-        return res.json({
-            success: true,
-            message: 'License successfully activated!',
-            expiry_date: expiryISO
-        });
-    }
-
-    res.status(403).json({ error: 'Invalid license state: ' + license.status });
+            db.run(`UPDATE licenses SET status = 'active', hwid = ?, activation_date = ?, expiry_date = ? WHERE key = ?`,
+                [hwid, now.toISOString(), expiryStr, key],
+                (updateErr) => {
+                    if (updateErr) return res.status(500).json({ error: 'Activation failed' });
+                    return res.json({ success: true, message: 'License successfully activated!', expiry_date: expiryStr });
+                });
+        }
+    });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`License Server running on port ${PORT}`);
-    console.log(`Admin Password: ${ADMIN_PASS}`);
 });

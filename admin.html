@@ -740,17 +740,12 @@
 
         window.doLogout = () => signOut(auth);
 
-        // ===== SERVER API =====
-        const SERVER = window.location.origin;
-        const ADMIN_PASS = prompt('أدخل كلمة سر الـ Server (API):') || 'admin123';
-
-        async function apiCall(endpoint, body) {
-            const r = await fetch(SERVER + endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: ADMIN_PASS, ...body })
-            });
-            return r.json();
+        // ===== UTILS =====
+        function generateLocalKey() {
+            const buf = new Uint8Array(10);
+            window.crypto.getRandomValues(buf);
+            const hex = Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+            return 'WHTS-' + hex.substring(0, 6) + '-' + hex.substring(6, 12) + '-' + hex.substring(12, 20);
         }
 
         // ===== LOAD ALL =====
@@ -758,17 +753,13 @@
             await Promise.all([loadClients(), loadKeys()]);
         }
 
-        // ===== CLIENTS (Backend API) =====
+        // ===== CLIENTS (Firestore) =====
         async function loadClients() {
             try {
-                const res = await apiCall('/api/admin/clients/list');
-                if (res.success) {
-                    clientsCache = res.clients || [];
-                    renderClients();
-                    updateStats();
-                } else {
-                    console.error("Failed loading clients:", res.error);
-                }
+                const snap = await getDocs(query(collection(db, 'clients'), orderBy('createdAt', 'desc')));
+                clientsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderClients();
+                updateStats();
             } catch (e) { console.error(e); }
         }
 
@@ -825,39 +816,45 @@
             if (!name || !phone) return alert('الاسم والهاتف مطلوبان!');
 
             const daysMap = { monthly: 30, yearly: 365, lifetime: 36500 };
-            const days = daysMap[type];
+            const days = parseInt(daysMap[type] || 30);
 
-            // Generate key from server
-            const res = await apiCall('/api/admin/generate', {
-                duration_days: days,
-                copies: 1,
-                bound_hwid: hwid || null
-            });
-
-            if (!res.success) return alert('خطأ: ' + res.error);
-            const key = res.keys[0].key;
+            const key = generateLocalKey();
             lastGeneratedKey = key;
 
             const now = new Date();
             const expiry = new Date();
             expiry.setDate(expiry.getDate() + days);
 
-            // Save client to backend SQLite instead of Firebase!
-            const generatedId = 'CL-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-            await apiCall('/api/admin/clients/add', {
-                id: generatedId,
-                name, phone, subscription_type: type, category, notes,
-                hwid: hwid || null, license_key: key,
-                start_date: now.toISOString(),
-                expiry_date: type === 'lifetime' ? null : expiry.toISOString()
-            });
+            try {
+                // Add to Licenses collection in Firestore
+                await addDoc(collection(db, 'licenses'), {
+                    key: key,
+                    duration_days: days,
+                    status: 'unused', // unused, active, expired, banned
+                    hwid: hwid || null,
+                    activation_date: null,
+                    expiry_date: null,
+                    created_at: now.toISOString()
+                });
 
-            document.getElementById('client-generated-box').style.display = 'block';
-            document.getElementById('client-generated-key').textContent = key;
+                // Add to Clients collection in Firestore
+                await addDoc(collection(db, 'clients'), {
+                    name, phone, subscriptionType: type, category, notes,
+                    hwid: hwid || null, licenseKey: key,
+                    startDate: now.toISOString(),
+                    expiryDate: type === 'lifetime' ? null : expiry.toISOString(),
+                    banned: false,
+                    createdAt: now.toISOString()
+                });
 
-            // Reset form
-            ['c-name', 'c-phone', 'c-hwid', 'c-notes'].forEach(id => document.getElementById(id).value = '');
-            await loadClients();
+                document.getElementById('client-generated-box').style.display = 'block';
+                document.getElementById('client-generated-key').textContent = key;
+
+                ['c-name', 'c-phone', 'c-hwid', 'c-notes'].forEach(id => document.getElementById(id).value = '');
+                await loadAll();
+            } catch (err) {
+                alert('خطأ أثناء الإنشاء. تأكد من إعدادات قاعدة البيانات.');
+            }
         };
 
         window.copyClientKey = () => {
@@ -885,22 +882,36 @@
             document.getElementById('client-modal').classList.add('show');
         };
 
-        window.banClient = async (id, key) => {
+        window.banClient = async (id, keyString) => {
             if (!confirm('هل أنت متأكد من حظر هذا العميل؟')) return;
-            await apiCall('/api/admin/clients/ban', { id, key });
-            closeModal();
-            await loadClients();
+            try {
+                await updateDoc(doc(db, 'clients', id), { banned: true });
+                if (keyString) {
+                    // Update key in licenses collection too
+                    const licensesSnap = await getDocs(query(collection(db, 'licenses')));
+                    for (const licenseDoc of licensesSnap.docs) {
+                        if (licenseDoc.data().key === keyString) {
+                            await updateDoc(doc(db, 'licenses', licenseDoc.id), { status: 'banned' });
+                            break;
+                        }
+                    }
+                }
+                closeModal();
+                await loadAll();
+            } catch (err) {
+                alert('حدث خطأ أثناء الحظر.');
+            }
         };
 
         window.closeModal = () => document.getElementById('client-modal').classList.remove('show');
 
-        // ===== KEYS =====
+        // ===== KEYS (Firestore) =====
         async function loadKeys() {
-            const res = await apiCall('/api/admin/list', {});
-            if (res.licenses) {
-                keysCache = res.licenses;
+            try {
+                const snap = await getDocs(query(collection(db, 'licenses'), orderBy('created_at', 'desc')));
+                keysCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderKeys();
-            }
+            } catch (e) { console.error('Error fetching keys', e); }
         }
 
         window.loadKeys = loadKeys;
@@ -923,16 +934,17 @@
                 <td><span class="badge ${statusBadge[l.status] || 'badge-unused'}">${statusLabel[l.status] || l.status}</span></td>
                 <td style="font-size:11px; max-width:120px; overflow:hidden; text-overflow:ellipsis" title="${l.hwid}">${l.hwid ? l.hwid.substring(0, 15) + '...' : '—'}</td>
                 <td style="font-size:12px">${exp}</td>
-                <td>${l.status !== 'banned' ? `<button class="btn btn-danger" onclick="banKey('${l.key}')">🚫 حظر</button>` : '—'}</td>
+                <td>${l.status !== 'banned' ? `<button class="btn btn-danger" onclick="banKey('${l.id}')">🚫 حظر</button>` : '—'}</td>
             </tr>`;
             }).join('');
         }
 
-        window.banKey = async (key) => {
+        window.banKey = async (docId) => {
             if (!confirm('حظر هذا المفتاح نهائياً؟')) return;
-            const res = await apiCall('/api/admin/ban', { key });
-            if (res.success) { await loadKeys(); }
-            else alert('خطأ: ' + res.error);
+            try {
+                await updateDoc(doc(db, 'licenses', docId), { status: 'banned' });
+                await loadKeys();
+            } catch (e) { alert('خطأ أثناء الحظر!'); }
         };
 
         // ===== GENERATE KEYS =====
@@ -943,27 +955,43 @@
 
         window.generateKeys = async () => {
             const typeVal = document.getElementById('g-type').value;
-            const days = typeVal === 'custom' ? document.getElementById('g-days').value : typeVal;
-            const copies = document.getElementById('g-copies').value;
+            let days = typeVal === 'custom' ? document.getElementById('g-days').value : typeVal;
+            days = parseInt(days);
+            if (isNaN(days) || days <= 0) days = 36500;
+            const copies = parseInt(document.getElementById('g-copies').value) || 1;
             const hwid = document.getElementById('g-hwid').value.trim();
-
-            const res = await apiCall('/api/admin/generate', {
-                duration_days: days, copies, bound_hwid: hwid || null
-            });
 
             const box = document.getElementById('generated-box');
             box.style.display = 'block';
 
-            if (res.error) { box.innerHTML = `<span style="color:#ef4444">❌ ${res.error}</span>`; return; }
+            try {
+                const now = new Date();
+                let keysArr = [];
+                for (let i = 0; i < copies; i++) {
+                    const k = generateLocalKey();
+                    await addDoc(collection(db, 'licenses'), {
+                        key: k,
+                        duration_days: days,
+                        status: 'unused',
+                        hwid: hwid || null,
+                        activation_date: null,
+                        expiry_date: null,
+                        created_at: now.toISOString()
+                    });
+                    keysArr.push(k);
+                }
 
-            box.innerHTML = `<div style="color:#10b981; font-weight:700; margin-bottom:12px">✅ تم توليد ${res.keys.length} مفتاح!</div>` +
-                res.keys.map(k => `
-                <div class="generated-key-row">
-                    <span class="key-mono">${k.key}</span>
-                    <button class="btn btn-success" onclick="navigator.clipboard.writeText('${k.key}')">📋 نسخ</button>
-                </div>`).join('');
+                box.innerHTML = `<div style="color:#10b981; font-weight:700; margin-bottom:12px">✅ تم توليد ${copies} مفتاح!</div>` +
+                    keysArr.map(k => `
+                    <div class="generated-key-row">
+                        <span class="key-mono">${k}</span>
+                        <button class="btn btn-success" onclick="navigator.clipboard.writeText('${k}')">📋 نسخ</button>
+                    </div>`).join('');
 
-            await loadKeys();
+                await loadKeys();
+            } catch (err) {
+                box.innerHTML = `<span style="color:#ef4444">❌ خطأ في قاعدة البيانات، لم يتم الحفظ.</span>`;
+            }
         };
 
         // ===== STATS =====

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WHTSPro - Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Cairo', sans-serif;
@@ -21,9 +26,9 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.15), transparent 60%),
-                        radial-gradient(ellipse at 20% 80%, rgba(245,158,11,0.1), transparent 50%),
-                        #07090f;
+            background: radial-gradient(ellipse at 60% 40%, rgba(59, 130, 246, 0.15), transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(245, 158, 11, 0.1), transparent 50%),
+                #07090f;
         }
 
         .login-box {
@@ -33,7 +38,7 @@
             padding: 50px 40px;
             width: 400px;
             text-align: center;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
         }
 
         .login-logo {
@@ -42,7 +47,9 @@
             margin-bottom: 8px;
         }
 
-        .login-logo span { color: #f59e0b; }
+        .login-logo span {
+            color: #f59e0b;
+        }
 
         .login-sub {
             color: #64748b;
@@ -65,7 +72,9 @@
             transition: border-color 0.2s;
         }
 
-        .login-input:focus { border-color: #3b82f6; }
+        .login-input:focus {
+            border-color: #3b82f6;
+        }
 
         .login-btn {
             width: 100%;
@@ -82,7 +91,9 @@
             margin-top: 5px;
         }
 
-        .login-btn:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
 
         .login-error {
             color: #ef4444;
@@ -92,7 +103,9 @@
         }
 
         /* ========= DASHBOARD ========= */
-        #dashboard { display: none; }
+        #dashboard {
+            display: none;
+        }
 
         .topbar {
             background: #0f172a;
@@ -107,8 +120,14 @@
             z-index: 100;
         }
 
-        .topbar-logo { font-size: 22px; font-weight: 900; }
-        .topbar-logo span { color: #f59e0b; }
+        .topbar-logo {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .topbar-logo span {
+            color: #f59e0b;
+        }
 
         .topbar-user {
             display: flex;
@@ -130,7 +149,9 @@
             transition: 0.2s;
         }
 
-        .logout-btn:hover { background: #ef444420; }
+        .logout-btn:hover {
+            background: #ef444420;
+        }
 
         .main-content {
             max-width: 1300px;
@@ -154,9 +175,22 @@
             text-align: center;
         }
 
-        .stat-icon { font-size: 28px; margin-bottom: 10px; }
-        .stat-value { font-size: 32px; font-weight: 900; color: #38bdf8; }
-        .stat-label { font-size: 13px; color: #64748b; margin-top: 5px; }
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #38bdf8;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 5px;
+        }
 
         /* ========= SECTION ========= */
         .section {
@@ -205,7 +239,9 @@
             transition: border-color 0.2s;
         }
 
-        .form-input:focus { border-color: #3b82f6; }
+        .form-input:focus {
+            border-color: #3b82f6;
+        }
 
         .btn {
             padding: 11px 25px;
@@ -218,14 +254,38 @@
             transition: 0.2s;
         }
 
-        .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-success { background: #10b981; color: white; }
-        .btn-danger { background: #ef4444; color: white; padding: 6px 14px; font-size: 12px; }
-        .btn-warning { background: #f59e0b; color: #0f172a; padding: 6px 14px; font-size: 12px; }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 6px 14px;
+            font-size: 12px;
+        }
 
         /* ========= TABLE ========= */
-        .table-wrap { overflow-x: auto; }
+        .table-wrap {
+            overflow-x: auto;
+        }
 
         table {
             width: 100%;
@@ -249,7 +309,9 @@
             vertical-align: middle;
         }
 
-        tr:hover td { background: #1e293b30; }
+        tr:hover td {
+            background: #1e293b30;
+        }
 
         .badge {
             padding: 4px 10px;
@@ -258,13 +320,38 @@
             font-weight: 700;
         }
 
-        .badge-unused { background: #334155; color: #94a3b8; }
-        .badge-active { background: #10b98120; color: #10b981; border: 1px solid #10b98140; }
-        .badge-expired { background: #ef444420; color: #ef4444; border: 1px solid #ef444440; }
-        .badge-banned { background: #dc262620; color: #dc2626; border: 1px solid #dc262640; }
+        .badge-unused {
+            background: #334155;
+            color: #94a3b8;
+        }
 
-        .type-monthly { color: #3b82f6; font-weight: 700; }
-        .type-lifetime { color: #f59e0b; font-weight: 700; }
+        .badge-active {
+            background: #10b98120;
+            color: #10b981;
+            border: 1px solid #10b98140;
+        }
+
+        .badge-expired {
+            background: #ef444420;
+            color: #ef4444;
+            border: 1px solid #ef444440;
+        }
+
+        .badge-banned {
+            background: #dc262620;
+            color: #dc2626;
+            border: 1px solid #dc262640;
+        }
+
+        .type-monthly {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .type-lifetime {
+            color: #f59e0b;
+            font-weight: 700;
+        }
 
         .key-mono {
             font-family: monospace;
@@ -291,7 +378,9 @@
             border-bottom: 1px solid #1e293b;
         }
 
-        .generated-key-row:last-child { border-bottom: none; }
+        .generated-key-row:last-child {
+            border-bottom: none;
+        }
 
         /* ========= SEARCH ========= */
         .search-bar {
@@ -321,10 +410,18 @@
             transition: 0.2s;
         }
 
-        .tab.active { background: #3b82f6; color: white; }
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+        }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         .empty-state {
             text-align: center;
@@ -332,20 +429,25 @@
             color: #475569;
         }
 
-        .empty-state-icon { font-size: 40px; margin-bottom: 10px; }
+        .empty-state-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
 
         /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 999;
             align-items: center;
             justify-content: center;
         }
 
-        .modal-overlay.show { display: flex; }
+        .modal-overlay.show {
+            display: flex;
+        }
 
         .modal {
             background: #0f172a;
@@ -356,319 +458,345 @@
             max-width: 95vw;
         }
 
-        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- ===== LOGIN PAGE ===== -->
-<div id="login-page">
-    <div class="login-box">
-        <div class="login-logo">WHTS<span>Pro</span></div>
-        <p class="login-sub">لوحة تحكم المدير</p>
-        <input type="email" class="login-input" id="login-email" placeholder="البريد الإلكتروني">
-        <input type="password" class="login-input" id="login-pass" placeholder="كلمة المرور">
-        <button class="login-btn" onclick="doLogin()">دخول</button>
-        <div class="login-error" id="login-error"></div>
-    </div>
-</div>
-
-<!-- ===== DASHBOARD ===== -->
-<div id="dashboard">
-    <div class="topbar">
-        <div class="topbar-logo">WHTS<span>Pro</span> — لوحة التحكم</div>
-        <div class="topbar-user">
-            <span id="user-email-display"></span>
-            <button class="logout-btn" onclick="doLogout()">خروج 🚪</button>
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="login-page">
+        <div class="login-box">
+            <div class="login-logo">WHTS<span>Pro</span></div>
+            <p class="login-sub">لوحة تحكم المدير</p>
+            <input type="email" class="login-input" id="login-email" placeholder="البريد الإلكتروني">
+            <input type="password" class="login-input" id="login-pass" placeholder="كلمة المرور">
+            <button class="login-btn" onclick="doLogin()">دخول</button>
+            <div class="login-error" id="login-error"></div>
         </div>
     </div>
 
-    <div class="main-content">
-
-        <!-- Stats -->
-        <div class="stats-grid" id="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="stat-total">0</div>
-                <div class="stat-label">إجمالي العملاء</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value" id="stat-active" style="color:#10b981">0</div>
-                <div class="stat-label">نشطين</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏰</div>
-                <div class="stat-value" id="stat-expiring" style="color:#f59e0b">0</div>
-                <div class="stat-label">تنتهي خلال 7 أيام</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">❌</div>
-                <div class="stat-value" id="stat-expired" style="color:#ef4444">0</div>
-                <div class="stat-label">منتهية / محظورة</div>
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboard">
+        <div class="topbar">
+            <div class="topbar-logo">WHTS<span>Pro</span> — لوحة التحكم</div>
+            <div class="topbar-user">
+                <span id="user-email-display"></span>
+                <button class="logout-btn" onclick="doLogout()">خروج 🚪</button>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('clients')">👥 العملاء</div>
-            <div class="tab" onclick="switchTab('generate')">🔑 توليد المفاتيح</div>
-            <div class="tab" onclick="switchTab('keys')">📋 كل المفاتيح</div>
-        </div>
+        <div class="main-content">
 
-        <!-- ===== TAB: CLIENTS ===== -->
-        <div class="tab-content active" id="tab-clients">
-            <div class="section">
-                <div class="section-title">👤 إضافة عميل جديد</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>الاسم الكامل</label>
-                        <input type="text" class="form-input" id="c-name" placeholder="مثال: مريم الحسني">
-                    </div>
-                    <div class="form-group">
-                        <label>رقم الهاتف</label>
-                        <input type="text" class="form-input" id="c-phone" placeholder="0612345678">
-                    </div>
-                    <div class="form-group">
-                        <label>نوع الاشتراك</label>
-                        <select class="form-input" id="c-type">
-                            <option value="monthly">شهري 💳</option>
-                            <option value="yearly">سنوي 📅</option>
-                            <option value="lifetime">مدى الحياة ♾️</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>نوع العميل</label>
-                        <select class="form-input" id="c-category">
-                            <option value="trial">تجريبي</option>
-                            <option value="paid">مدفوع</option>
-                            <option value="vip">VIP</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>HWID (Device ID) - اختياري</label>
-                        <input type="text" class="form-input" id="c-hwid" placeholder="اتركه فارغاً إن لم يكن لديك">
-                    </div>
-                    <div class="form-group">
-                        <label>ملاحظات</label>
-                        <input type="text" class="form-input" id="c-notes" placeholder="أي معلومة إضافية...">
-                    </div>
+            <!-- Stats -->
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">إجمالي العملاء</div>
                 </div>
-                <button class="btn btn-primary" onclick="addClient()">➕ إضافة العميل وتوليد مفتاح</button>
-                <div class="generated-box" id="client-generated-box">
-                    <div style="color:#10b981; font-weight:700; margin-bottom:10px;">✅ تم إنشاء العميل والمفتاح بنجاح!</div>
-                    <div id="client-generated-key" class="key-mono" style="font-size:18px; margin-bottom:10px;"></div>
-                    <button class="btn btn-success" onclick="copyClientKey()">📋 نسخ المفتاح</button>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="stat-active" style="color:#10b981">0</div>
+                    <div class="stat-label">نشطين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏰</div>
+                    <div class="stat-value" id="stat-expiring" style="color:#f59e0b">0</div>
+                    <div class="stat-label">تنتهي خلال 7 أيام</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-value" id="stat-expired" style="color:#ef4444">0</div>
+                    <div class="stat-label">منتهية / محظورة</div>
                 </div>
             </div>
 
-            <div class="section">
-                <div class="section-title">📋 قائمة العملاء</div>
-                <div class="search-bar">
-                    <input type="text" class="form-input" id="search-clients" placeholder="ابحث بالاسم أو الهاتف..." oninput="renderClients()" style="flex:1">
-                    <button class="btn btn-primary" onclick="renderClients()">🔍 بحث</button>
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('clients')">👥 العملاء</div>
+                <div class="tab" onclick="switchTab('generate')">🔑 توليد المفاتيح</div>
+                <div class="tab" onclick="switchTab('keys')">📋 كل المفاتيح</div>
+            </div>
+
+            <!-- ===== TAB: CLIENTS ===== -->
+            <div class="tab-content active" id="tab-clients">
+                <div class="section">
+                    <div class="section-title">👤 إضافة عميل جديد</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>الاسم الكامل</label>
+                            <input type="text" class="form-input" id="c-name" placeholder="مثال: مريم الحسني">
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف</label>
+                            <input type="text" class="form-input" id="c-phone" placeholder="0612345678">
+                        </div>
+                        <div class="form-group">
+                            <label>نوع الاشتراك</label>
+                            <select class="form-input" id="c-type">
+                                <option value="monthly">شهري 💳</option>
+                                <option value="yearly">سنوي 📅</option>
+                                <option value="lifetime">مدى الحياة ♾️</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>نوع العميل</label>
+                            <select class="form-input" id="c-category">
+                                <option value="trial">تجريبي</option>
+                                <option value="paid">مدفوع</option>
+                                <option value="vip">VIP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>HWID (Device ID) - اختياري</label>
+                            <input type="text" class="form-input" id="c-hwid" placeholder="اتركه فارغاً إن لم يكن لديك">
+                        </div>
+                        <div class="form-group">
+                            <label>ملاحظات</label>
+                            <input type="text" class="form-input" id="c-notes" placeholder="أي معلومة إضافية...">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="addClient()">➕ إضافة العميل وتوليد مفتاح</button>
+                    <div class="generated-box" id="client-generated-box">
+                        <div style="color:#10b981; font-weight:700; margin-bottom:10px;">✅ تم إنشاء العميل والمفتاح
+                            بنجاح!</div>
+                        <div id="client-generated-key" class="key-mono" style="font-size:18px; margin-bottom:10px;">
+                        </div>
+                        <button class="btn btn-success" onclick="copyClientKey()">📋 نسخ المفتاح</button>
+                    </div>
                 </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الهاتف</th>
-                                <th>النوع</th>
-                                <th>الفئة</th>
-                                <th>الحالة</th>
-                                <th>تاريخ البدء</th>
-                                <th>تاريخ الانتهاء</th>
-                                <th>الإجراء</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clients-tbody">
-                            <tr id="clients-loading"><td colspan="8" class="empty-state"><div class="empty-state-icon">⏳</div>جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
+
+                <div class="section">
+                    <div class="section-title">📋 قائمة العملاء</div>
+                    <div class="search-bar">
+                        <input type="text" class="form-input" id="search-clients" placeholder="ابحث بالاسم أو الهاتف..."
+                            oninput="renderClients()" style="flex:1">
+                        <button class="btn btn-primary" onclick="renderClients()">🔍 بحث</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>النوع</th>
+                                    <th>الفئة</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ البدء</th>
+                                    <th>تاريخ الانتهاء</th>
+                                    <th>الإجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-tbody">
+                                <tr id="clients-loading">
+                                    <td colspan="8" class="empty-state">
+                                        <div class="empty-state-icon">⏳</div>جاري التحميل...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ===== TAB: GENERATE ===== -->
-        <div class="tab-content" id="tab-generate">
-            <div class="section">
-                <div class="section-title">🔑 توليد مفاتيح الترخيص</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>نوع الاشتراك</label>
-                        <select class="form-input" id="g-type" onchange="updateDuration()">
-                            <option value="30">شهري (30 يوم)</option>
-                            <option value="365">سنوي (365 يوم)</option>
-                            <option value="36500">مدى الحياة ♾️</option>
-                            <option value="custom">مخصص</option>
-                        </select>
+            <!-- ===== TAB: GENERATE ===== -->
+            <div class="tab-content" id="tab-generate">
+                <div class="section">
+                    <div class="section-title">🔑 توليد مفاتيح الترخيص</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>نوع الاشتراك</label>
+                            <select class="form-input" id="g-type" onchange="updateDuration()">
+                                <option value="30">شهري (30 يوم)</option>
+                                <option value="365">سنوي (365 يوم)</option>
+                                <option value="36500">مدى الحياة ♾️</option>
+                                <option value="custom">مخصص</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="custom-days-group" style="display:none">
+                            <label>عدد الأيام</label>
+                            <input type="number" class="form-input" id="g-days" value="30" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>عدد المفاتيح</label>
+                            <input type="number" class="form-input" id="g-copies" value="1" min="1" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label>ربط بـ HWID (اختياري)</label>
+                            <input type="text" class="form-input" id="g-hwid" placeholder="Device ID أو اتركه فارغاً">
+                        </div>
                     </div>
-                    <div class="form-group" id="custom-days-group" style="display:none">
-                        <label>عدد الأيام</label>
-                        <input type="number" class="form-input" id="g-days" value="30" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label>عدد المفاتيح</label>
-                        <input type="number" class="form-input" id="g-copies" value="1" min="1" max="50">
-                    </div>
-                    <div class="form-group">
-                        <label>ربط بـ HWID (اختياري)</label>
-                        <input type="text" class="form-input" id="g-hwid" placeholder="Device ID أو اتركه فارغاً">
-                    </div>
-                </div>
-                <button class="btn btn-primary" onclick="generateKeys()">⚡ توليد المفاتيح</button>
+                    <button class="btn btn-primary" onclick="generateKeys()">⚡ توليد المفاتيح</button>
 
-                <div class="generated-box" id="generated-box"></div>
-            </div>
-        </div>
-
-        <!-- ===== TAB: ALL KEYS ===== -->
-        <div class="tab-content" id="tab-keys">
-            <div class="section">
-                <div class="section-title" style="justify-content:space-between">
-                    <span>📋 كل مفاتيح الترخيص</span>
-                    <button class="btn btn-primary" style="font-size:13px" onclick="loadKeys()">🔄 تحديث</button>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>المفتاح</th>
-                                <th>الأيام</th>
-                                <th>الحالة</th>
-                                <th>HWID</th>
-                                <th>تاريخ الانتهاء</th>
-                                <th>إجراء</th>
-                            </tr>
-                        </thead>
-                        <tbody id="keys-tbody">
-                            <tr><td colspan="6" class="empty-state"><div class="empty-state-icon">⏳</div>جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
+                    <div class="generated-box" id="generated-box"></div>
                 </div>
             </div>
-        </div>
 
+            <!-- ===== TAB: ALL KEYS ===== -->
+            <div class="tab-content" id="tab-keys">
+                <div class="section">
+                    <div class="section-title" style="justify-content:space-between">
+                        <span>📋 كل مفاتيح الترخيص</span>
+                        <button class="btn btn-primary" style="font-size:13px" onclick="loadKeys()">🔄 تحديث</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>المفتاح</th>
+                                    <th>الأيام</th>
+                                    <th>الحالة</th>
+                                    <th>HWID</th>
+                                    <th>تاريخ الانتهاء</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keys-tbody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="empty-state-icon">⏳</div>جاري التحميل...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
 
-<!-- Modal: Client Detail -->
-<div class="modal-overlay" id="client-modal">
-    <div class="modal">
-        <div class="modal-title">📝 تفاصيل العميل</div>
-        <div id="modal-content"></div>
-        <div class="modal-actions">
-            <button class="btn btn-danger" id="modal-ban-btn">🚫 حظر</button>
-            <button class="btn" style="background:#334155; color:white;" onclick="closeModal()">إغلاق</button>
+    <!-- Modal: Client Detail -->
+    <div class="modal-overlay" id="client-modal">
+        <div class="modal">
+            <div class="modal-title">📝 تفاصيل العميل</div>
+            <div id="modal-content"></div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="modal-ban-btn">🚫 حظر</button>
+                <button class="btn" style="background:#334155; color:white;" onclick="closeModal()">إغلاق</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Firebase SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCOKCULYKKjMnPZcqbby4BFT_GeEkKzC0A",
-        authDomain: "admin-ec8ee.firebaseapp.com",
-        projectId: "admin-ec8ee",
-        storageBucket: "admin-ec8ee.firebasestorage.app",
-        messagingSenderId: "685072225056",
-        appId: "1:685072225056:web:e7224120612d43e440bd45"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOKCULYKKjMnPZcqbby4BFT_GeEkKzC0A",
+            authDomain: "admin-ec8ee.firebaseapp.com",
+            projectId: "admin-ec8ee",
+            storageBucket: "admin-ec8ee.firebasestorage.app",
+            messagingSenderId: "685072225056",
+            appId: "1:685072225056:web:e7224120612d43e440bd45"
+        };
 
-    const fbApp = initializeApp(firebaseConfig);
-    const auth = getAuth(fbApp);
-    const db = getFirestore(fbApp);
+        const fbApp = initializeApp(firebaseConfig);
+        const auth = getAuth(fbApp);
+        const db = getFirestore(fbApp);
 
-    let clientsCache = [];
-    let keysCache = [];
-    let lastGeneratedKey = '';
+        let clientsCache = [];
+        let keysCache = [];
+        let lastGeneratedKey = '';
 
-    // Auth state
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('user-email-display').textContent = user.email;
-            loadAll();
-        } else {
-            document.getElementById('login-page').style.display = 'flex';
-            document.getElementById('dashboard').style.display = 'none';
-        }
-    });
-
-    window.doLogin = async () => {
-        const email = document.getElementById('login-email').value;
-        const pass = document.getElementById('login-pass').value;
-        const err = document.getElementById('login-error');
-        err.textContent = '';
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-        } catch(e) {
-            err.textContent = 'خطأ: البريد أو كلمة المرور غير صحيحة';
-        }
-    };
-
-    window.doLogout = () => signOut(auth);
-
-    // ===== SERVER API =====
-    const SERVER = window.location.origin;
-    const ADMIN_PASS = prompt('أدخل كلمة سر الـ Server (API):') || 'admin123';
-
-    async function apiCall(endpoint, body) {
-        const r = await fetch(SERVER + endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: ADMIN_PASS, ...body })
+        // Auth state
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('user-email-display').textContent = user.email;
+                loadAll();
+            } else {
+                document.getElementById('login-page').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+            }
         });
-        return r.json();
-    }
 
-    // ===== LOAD ALL =====
-    async function loadAll() {
-        await Promise.all([loadClients(), loadKeys()]);
-    }
+        window.doLogin = async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            const err = document.getElementById('login-error');
+            err.textContent = '';
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) {
+                err.textContent = 'خطأ: البريد أو كلمة المرور غير صحيحة';
+            }
+        };
 
-    // ===== CLIENTS (Firestore) =====
-    async function loadClients() {
-        try {
-            const snap = await getDocs(query(collection(db, 'clients'), orderBy('createdAt', 'desc')));
-            clientsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderClients();
-            updateStats();
-        } catch(e) { console.error(e); }
-    }
+        window.doLogout = () => signOut(auth);
 
-    window.renderClients = () => {
-        const search = (document.getElementById('search-clients')?.value || '').toLowerCase();
-        const tbody = document.getElementById('clients-tbody');
-        const filtered = clientsCache.filter(c =>
-            c.name?.toLowerCase().includes(search) || c.phone?.includes(search)
-        );
+        // ===== SERVER API =====
+        const SERVER = window.location.origin;
+        const ADMIN_PASS = prompt('أدخل كلمة سر الـ Server (API):') || 'admin123';
 
-        if (!filtered.length) {
-            tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">👥</div>لا يوجد عملاء</td></tr>`;
-            return;
+        async function apiCall(endpoint, body) {
+            const r = await fetch(SERVER + endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: ADMIN_PASS, ...body })
+            });
+            return r.json();
         }
 
-        tbody.innerHTML = filtered.map(c => {
-            const now = new Date();
-            const exp = c.expiryDate ? new Date(c.expiryDate) : null;
-            const isExpired = exp && exp < now;
-            const daysLeft = exp ? Math.ceil((exp - now) / 86400000) : null;
-            const status = c.banned ? 'banned' : isExpired ? 'expired' : 'active';
-            const badges = { active: 'badge-active', expired: 'badge-expired', banned: 'badge-banned' };
-            const labels = { active: 'نشط', expired: 'منتهي', banned: 'محظور' };
-            const typeMap = { monthly: 'شهري', yearly: 'سنوي', lifetime: 'مدى الحياة' };
-            const catMap = { trial: 'تجريبي', paid: 'مدفوع', vip: 'VIP ⭐' };
-            const typeClass = c.subscriptionType === 'lifetime' ? 'type-lifetime' : 'type-monthly';
+        // ===== LOAD ALL =====
+        async function loadAll() {
+            await Promise.all([loadClients(), loadKeys()]);
+        }
 
-            return `<tr>
+        // ===== CLIENTS (Backend API) =====
+        async function loadClients() {
+            try {
+                const res = await apiCall('/api/admin/clients/list');
+                if (res.success) {
+                    clientsCache = res.clients || [];
+                    renderClients();
+                    updateStats();
+                } else {
+                    console.error("Failed loading clients:", res.error);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        window.renderClients = () => {
+            const search = (document.getElementById('search-clients')?.value || '').toLowerCase();
+            const tbody = document.getElementById('clients-tbody');
+            const filtered = clientsCache.filter(c =>
+                c.name?.toLowerCase().includes(search) || c.phone?.includes(search)
+            );
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">👥</div>لا يوجد عملاء</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(c => {
+                const now = new Date();
+                const exp = c.expiryDate ? new Date(c.expiryDate) : null;
+                const isExpired = exp && exp < now;
+                const daysLeft = exp ? Math.ceil((exp - now) / 86400000) : null;
+                const status = c.banned ? 'banned' : isExpired ? 'expired' : 'active';
+                const badges = { active: 'badge-active', expired: 'badge-expired', banned: 'badge-banned' };
+                const labels = { active: 'نشط', expired: 'منتهي', banned: 'محظور' };
+                const typeMap = { monthly: 'شهري', yearly: 'سنوي', lifetime: 'مدى الحياة' };
+                const catMap = { trial: 'تجريبي', paid: 'مدفوع', vip: 'VIP ⭐' };
+                const typeClass = c.subscriptionType === 'lifetime' ? 'type-lifetime' : 'type-monthly';
+
+                return `<tr>
                 <td><b>${c.name || '-'}</b></td>
                 <td>${c.phone || '-'}</td>
                 <td class="${typeClass}">${typeMap[c.subscriptionType] || c.subscriptionType}</td>
@@ -683,65 +811,66 @@
                     ${!c.banned ? `<button class="btn btn-danger" style="margin-right:5px" onclick="banClient('${c.id}', '${c.licenseKey}')">🚫 حظر</button>` : ''}
                 </td>
             </tr>`;
-        }).join('');
-    };
+            }).join('');
+        };
 
-    window.addClient = async () => {
-        const name = document.getElementById('c-name').value.trim();
-        const phone = document.getElementById('c-phone').value.trim();
-        const type = document.getElementById('c-type').value;
-        const category = document.getElementById('c-category').value;
-        const hwid = document.getElementById('c-hwid').value.trim();
-        const notes = document.getElementById('c-notes').value.trim();
+        window.addClient = async () => {
+            const name = document.getElementById('c-name').value.trim();
+            const phone = document.getElementById('c-phone').value.trim();
+            const type = document.getElementById('c-type').value;
+            const category = document.getElementById('c-category').value;
+            const hwid = document.getElementById('c-hwid').value.trim();
+            const notes = document.getElementById('c-notes').value.trim();
 
-        if (!name || !phone) return alert('الاسم والهاتف مطلوبان!');
+            if (!name || !phone) return alert('الاسم والهاتف مطلوبان!');
 
-        const daysMap = { monthly: 30, yearly: 365, lifetime: 36500 };
-        const days = daysMap[type];
+            const daysMap = { monthly: 30, yearly: 365, lifetime: 36500 };
+            const days = daysMap[type];
 
-        // Generate key from server
-        const res = await apiCall('/api/admin/generate', {
-            duration_days: days,
-            copies: 1,
-            bound_hwid: hwid || null
-        });
+            // Generate key from server
+            const res = await apiCall('/api/admin/generate', {
+                duration_days: days,
+                copies: 1,
+                bound_hwid: hwid || null
+            });
 
-        if (!res.success) return alert('خطأ: ' + res.error);
-        const key = res.keys[0].key;
-        lastGeneratedKey = key;
+            if (!res.success) return alert('خطأ: ' + res.error);
+            const key = res.keys[0].key;
+            lastGeneratedKey = key;
 
-        const now = new Date();
-        const expiry = new Date();
-        expiry.setDate(expiry.getDate() + days);
+            const now = new Date();
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + days);
 
-        await addDoc(collection(db, 'clients'), {
-            name, phone, subscriptionType: type, category, notes,
-            hwid: hwid || null, licenseKey: key,
-            startDate: now.toISOString(),
-            expiryDate: type === 'lifetime' ? null : expiry.toISOString(),
-            banned: false,
-            createdAt: now.toISOString()
-        });
+            // Save client to backend SQLite instead of Firebase!
+            const generatedId = 'CL-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            await apiCall('/api/admin/clients/add', {
+                id: generatedId,
+                name, phone, subscription_type: type, category, notes,
+                hwid: hwid || null, license_key: key,
+                start_date: now.toISOString(),
+                expiry_date: type === 'lifetime' ? null : expiry.toISOString()
+            });
 
-        document.getElementById('client-generated-box').style.display = 'block';
-        document.getElementById('client-generated-key').textContent = key;
+            document.getElementById('client-generated-box').style.display = 'block';
+            document.getElementById('client-generated-key').textContent = key;
 
-        // Reset form
-        ['c-name', 'c-phone', 'c-hwid', 'c-notes'].forEach(id => document.getElementById(id).value = '');
-        await loadClients();
-    };
+            // Reset form
+            ['c-name', 'c-phone', 'c-hwid', 'c-notes'].forEach(id => document.getElementById(id).value = '');
+            await loadClients();
+        };
 
-    window.copyClientKey = () => {
-        navigator.clipboard.writeText(lastGeneratedKey);
-        alert('✅ تم نسخ المفتاح!');
-    };
+        window.copyClientKey = () => {
+            navigator.clipboard.writeText(lastGeneratedKey);
+            alert('✅ تم نسخ المفتاح!');
+        };
 
-    window.viewClient = (id) => {
-        const c = clientsCache.find(x => x.id === id);
-        if (!c) return;
-        const exp = c.expiryDate ? new Date(c.expiryDate).toLocaleDateString('ar-MA') : 'مدى الحياة';
-        const typeMap = { monthly: 'شهري', yearly: 'سنوي', lifetime: 'مدى الحياة' };
-        document.getElementById('modal-content').innerHTML = `
+        window.viewClient = (id) => {
+            const c = clientsCache.find(x => x.id === id);
+            if (!c) return;
+            const exp = c.expiryDate ? new Date(c.expiryDate).toLocaleDateString('ar-MA') : 'مدى الحياة';
+            const typeMap = { monthly: 'شهري', yearly: 'سنوي', lifetime: 'مدى الحياة' };
+            document.getElementById('modal-content').innerHTML = `
             <table style="width:100%; font-size:14px">
                 <tr><td style="color:#64748b; padding:8px 0">الاسم</td><td><b>${c.name}</b></td></tr>
                 <tr><td style="color:#64748b; padding:8px 0">الهاتف</td><td>${c.phone}</td></tr>
@@ -752,44 +881,43 @@
                 <tr><td style="color:#64748b; padding:8px 0">ملاحظات</td><td>${c.notes || '-'}</td></tr>
             </table>
         `;
-        document.getElementById('modal-ban-btn').onclick = () => banClient(id, c.licenseKey);
-        document.getElementById('client-modal').classList.add('show');
-    };
+            document.getElementById('modal-ban-btn').onclick = () => banClient(id, c.licenseKey);
+            document.getElementById('client-modal').classList.add('show');
+        };
 
-    window.banClient = async (id, key) => {
-        if (!confirm('هل أنت متأكد من حظر هذا العميل؟')) return;
-        if (key) await apiCall('/api/admin/ban', { key });
-        await updateDoc(doc(db, 'clients', id), { banned: true });
-        closeModal();
-        await loadClients();
-    };
+        window.banClient = async (id, key) => {
+            if (!confirm('هل أنت متأكد من حظر هذا العميل؟')) return;
+            await apiCall('/api/admin/clients/ban', { id, key });
+            closeModal();
+            await loadClients();
+        };
 
-    window.closeModal = () => document.getElementById('client-modal').classList.remove('show');
+        window.closeModal = () => document.getElementById('client-modal').classList.remove('show');
 
-    // ===== KEYS =====
-    async function loadKeys() {
-        const res = await apiCall('/api/admin/list', {});
-        if (res.licenses) {
-            keysCache = res.licenses;
-            renderKeys();
+        // ===== KEYS =====
+        async function loadKeys() {
+            const res = await apiCall('/api/admin/list', {});
+            if (res.licenses) {
+                keysCache = res.licenses;
+                renderKeys();
+            }
         }
-    }
 
-    window.loadKeys = loadKeys;
+        window.loadKeys = loadKeys;
 
-    function renderKeys() {
-        const tbody = document.getElementById('keys-tbody');
-        if (!keysCache.length) {
-            tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">🔑</div>لا توجد مفاتيح</td></tr>`;
-            return;
-        }
-        const statusBadge = { unused: 'badge-unused', active: 'badge-active', expired: 'badge-expired', banned: 'badge-banned' };
-        const statusLabel = { unused: 'غير مستخدم', active: 'نشط', expired: 'منتهي', banned: 'محظور' };
+        function renderKeys() {
+            const tbody = document.getElementById('keys-tbody');
+            if (!keysCache.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">🔑</div>لا توجد مفاتيح</td></tr>`;
+                return;
+            }
+            const statusBadge = { unused: 'badge-unused', active: 'badge-active', expired: 'badge-expired', banned: 'badge-banned' };
+            const statusLabel = { unused: 'غير مستخدم', active: 'نشط', expired: 'منتهي', banned: 'محظور' };
 
-        tbody.innerHTML = keysCache.map(l => {
-            const exp = l.expiry_date ? new Date(l.expiry_date).toLocaleDateString('ar-MA') : '-';
-            const daysLabel = l.duration_days >= 36000 ? 'مدى الحياة ♾️' : `${l.duration_days} يوم`;
-            return `<tr>
+            tbody.innerHTML = keysCache.map(l => {
+                const exp = l.expiry_date ? new Date(l.expiry_date).toLocaleDateString('ar-MA') : '-';
+                const daysLabel = l.duration_days >= 36000 ? 'مدى الحياة ♾️' : `${l.duration_days} يوم`;
+                return `<tr>
                 <td class="key-mono">${l.key}</td>
                 <td>${daysLabel}</td>
                 <td><span class="badge ${statusBadge[l.status] || 'badge-unused'}">${statusLabel[l.status] || l.status}</span></td>
@@ -797,76 +925,77 @@
                 <td style="font-size:12px">${exp}</td>
                 <td>${l.status !== 'banned' ? `<button class="btn btn-danger" onclick="banKey('${l.key}')">🚫 حظر</button>` : '—'}</td>
             </tr>`;
-        }).join('');
-    }
+            }).join('');
+        }
 
-    window.banKey = async (key) => {
-        if (!confirm('حظر هذا المفتاح نهائياً؟')) return;
-        const res = await apiCall('/api/admin/ban', { key });
-        if (res.success) { await loadKeys(); }
-        else alert('خطأ: ' + res.error);
-    };
+        window.banKey = async (key) => {
+            if (!confirm('حظر هذا المفتاح نهائياً؟')) return;
+            const res = await apiCall('/api/admin/ban', { key });
+            if (res.success) { await loadKeys(); }
+            else alert('خطأ: ' + res.error);
+        };
 
-    // ===== GENERATE KEYS =====
-    window.updateDuration = () => {
-        const val = document.getElementById('g-type').value;
-        document.getElementById('custom-days-group').style.display = val === 'custom' ? 'block' : 'none';
-    };
+        // ===== GENERATE KEYS =====
+        window.updateDuration = () => {
+            const val = document.getElementById('g-type').value;
+            document.getElementById('custom-days-group').style.display = val === 'custom' ? 'block' : 'none';
+        };
 
-    window.generateKeys = async () => {
-        const typeVal = document.getElementById('g-type').value;
-        const days = typeVal === 'custom' ? document.getElementById('g-days').value : typeVal;
-        const copies = document.getElementById('g-copies').value;
-        const hwid = document.getElementById('g-hwid').value.trim();
+        window.generateKeys = async () => {
+            const typeVal = document.getElementById('g-type').value;
+            const days = typeVal === 'custom' ? document.getElementById('g-days').value : typeVal;
+            const copies = document.getElementById('g-copies').value;
+            const hwid = document.getElementById('g-hwid').value.trim();
 
-        const res = await apiCall('/api/admin/generate', {
-            duration_days: days, copies, bound_hwid: hwid || null
-        });
+            const res = await apiCall('/api/admin/generate', {
+                duration_days: days, copies, bound_hwid: hwid || null
+            });
 
-        const box = document.getElementById('generated-box');
-        box.style.display = 'block';
+            const box = document.getElementById('generated-box');
+            box.style.display = 'block';
 
-        if (res.error) { box.innerHTML = `<span style="color:#ef4444">❌ ${res.error}</span>`; return; }
+            if (res.error) { box.innerHTML = `<span style="color:#ef4444">❌ ${res.error}</span>`; return; }
 
-        box.innerHTML = `<div style="color:#10b981; font-weight:700; margin-bottom:12px">✅ تم توليد ${res.keys.length} مفتاح!</div>` +
-            res.keys.map(k => `
+            box.innerHTML = `<div style="color:#10b981; font-weight:700; margin-bottom:12px">✅ تم توليد ${res.keys.length} مفتاح!</div>` +
+                res.keys.map(k => `
                 <div class="generated-key-row">
                     <span class="key-mono">${k.key}</span>
                     <button class="btn btn-success" onclick="navigator.clipboard.writeText('${k.key}')">📋 نسخ</button>
                 </div>`).join('');
 
-        await loadKeys();
-    };
+            await loadKeys();
+        };
 
-    // ===== STATS =====
-    function updateStats() {
-        const now = new Date();
-        document.getElementById('stat-total').textContent = clientsCache.length;
-        document.getElementById('stat-active').textContent = clientsCache.filter(c => !c.banned && (!c.expiryDate || new Date(c.expiryDate) > now)).length;
-        document.getElementById('stat-expiring').textContent = clientsCache.filter(c => {
-            if (!c.expiryDate || c.banned) return false;
-            const d = Math.ceil((new Date(c.expiryDate) - now) / 86400000);
-            return d > 0 && d <= 7;
-        }).length;
-        document.getElementById('stat-expired').textContent = clientsCache.filter(c => c.banned || (c.expiryDate && new Date(c.expiryDate) < now)).length;
-    }
+        // ===== STATS =====
+        function updateStats() {
+            const now = new Date();
+            document.getElementById('stat-total').textContent = clientsCache.length;
+            document.getElementById('stat-active').textContent = clientsCache.filter(c => !c.banned && (!c.expiryDate || new Date(c.expiryDate) > now)).length;
+            document.getElementById('stat-expiring').textContent = clientsCache.filter(c => {
+                if (!c.expiryDate || c.banned) return false;
+                const d = Math.ceil((new Date(c.expiryDate) - now) / 86400000);
+                return d > 0 && d <= 7;
+            }).length;
+            document.getElementById('stat-expired').textContent = clientsCache.filter(c => c.banned || (c.expiryDate && new Date(c.expiryDate) < now)).length;
+        }
 
-    // ===== TABS =====
-    window.switchTab = (name) => {
-        document.querySelectorAll('.tab').forEach((t, i) => {
-            const names = ['clients', 'generate', 'keys'];
-            t.classList.toggle('active', names[i] === name);
+        // ===== TABS =====
+        window.switchTab = (name) => {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                const names = ['clients', 'generate', 'keys'];
+                t.classList.toggle('active', names[i] === name);
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            if (name === 'keys') loadKeys();
+        };
+
+        // Enter key login
+        document.getElementById('login-pass').addEventListener('keydown', e => {
+            if (e.key === 'Enter') window.doLogin();
         });
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        if (name === 'keys') loadKeys();
-    };
-
-    // Enter key login
-    document.getElementById('login-pass').addEventListener('keydown', e => {
-        if (e.key === 'Enter') window.doLogin();
-    });
-</script>
+    </script>
 
 </body>
+
 </html>

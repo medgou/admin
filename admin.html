@@ -760,7 +760,11 @@
                 clientsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderClients();
                 updateStats();
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+                alert('خطأ في جلب بيانات العملاء: ' + e.message);
+                renderClients(); // to clear the loading state
+            }
         }
 
         window.renderClients = () => {

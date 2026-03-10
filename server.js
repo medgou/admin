@@ -9,9 +9,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ====== Config ======
+const fs = require('fs');
 const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
 // Use /data for Railway Volumes if available, otherwise fallback to __dirname
-const DB_DIR = process.env.RAILWAY_ENVIRONMENT ? '/data' : __dirname;
+const DB_DIR = fs.existsSync('/data') ? '/data' : __dirname;
 const dbPath = path.join(DB_DIR, 'licenses.db');
 
 console.log('Using DB Path:', dbPath);

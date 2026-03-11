@@ -35,7 +35,7 @@ try {
     console.error('[Firebase] Failed to init. Check FIREBASE_B64 env var.');
 }
 
-const db = admin.firestore ? admin.firestore() : null;
+const db = admin.apps.length > 0 ? admin.firestore() : null;
 
 // Serve Admin Dashboard
 app.get('/', (req, res) => {
